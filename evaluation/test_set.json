@@ -1,0 +1,127 @@
+{
+  "_comment": "Sample Q&A evaluation set for DocChat. Replace 'relevant_sources' with actual filenames from your indexed documents. The 'relevant_chunks_keywords' field is used for recall estimation (keyword match heuristic).",
+  "version": "1.0",
+  "description": "15 Q&A pairs covering typical enterprise document scenarios",
+  "pairs": [
+    {
+      "id": "q01",
+      "question": "What is the company's remote work policy for employees?",
+      "ground_truth": "Employees may work remotely up to 3 days per week with manager approval. Full remote requires VP sign-off.",
+      "relevant_sources": ["hr_policy.pdf"],
+      "relevant_chunks_keywords": ["remote work", "work from home", "telecommute", "days per week"],
+      "category": "HR Policy"
+    },
+    {
+      "id": "q02",
+      "question": "How should employees report a data security incident?",
+      "ground_truth": "Security incidents must be reported to security@company.com within 24 hours of detection. Include incident type, affected systems, and estimated impact.",
+      "relevant_sources": ["security_policy.pdf"],
+      "relevant_chunks_keywords": ["security incident", "report", "24 hours", "data breach"],
+      "category": "Security"
+    },
+    {
+      "id": "q03",
+      "question": "What is the maximum reimbursable amount for business travel per diem?",
+      "ground_truth": "The standard per diem rate is $75 for meals and incidentals. Major cities may qualify for up to $110.",
+      "relevant_sources": ["travel_policy.pdf"],
+      "relevant_chunks_keywords": ["per diem", "travel reimbursement", "meals", "incidentals"],
+      "category": "Finance"
+    },
+    {
+      "id": "q04",
+      "question": "What are the steps to onboard a new vendor?",
+      "ground_truth": "Vendor onboarding requires: (1) Legal review of contracts, (2) Finance approval for budget, (3) IT security assessment, (4) Executive sign-off for contracts >$50,000.",
+      "relevant_sources": ["procurement_manual.pdf"],
+      "relevant_chunks_keywords": ["vendor onboarding", "procurement", "vendor approval", "contract"],
+      "category": "Procurement"
+    },
+    {
+      "id": "q05",
+      "question": "How many vacation days are new employees entitled to in their first year?",
+      "ground_truth": "New employees receive 15 days of paid vacation in their first year, increasing to 20 days after 3 years of service.",
+      "relevant_sources": ["hr_policy.pdf"],
+      "relevant_chunks_keywords": ["vacation days", "PTO", "paid time off", "first year", "annual leave"],
+      "category": "HR Policy"
+    },
+    {
+      "id": "q06",
+      "question": "What password complexity requirements does the company enforce?",
+      "ground_truth": "Passwords must be at least 12 characters and include uppercase, lowercase, numbers, and special characters. Passwords expire every 90 days.",
+      "relevant_sources": ["it_security_standards.pdf"],
+      "relevant_chunks_keywords": ["password", "complexity", "12 characters", "expiry", "90 days"],
+      "category": "IT Security"
+    },
+    {
+      "id": "q07",
+      "question": "What is the process for requesting budget approval for a new project?",
+      "ground_truth": "Projects under $10,000 require department head approval. Projects $10,000–$100,000 need Finance Director sign-off. Above $100,000 requires Board approval.",
+      "relevant_sources": ["finance_policy.pdf"],
+      "relevant_chunks_keywords": ["budget approval", "project funding", "finance approval", "sign-off"],
+      "category": "Finance"
+    },
+    {
+      "id": "q08",
+      "question": "How does the performance review process work?",
+      "ground_truth": "Performance reviews occur twice yearly: mid-year in June and year-end in December. Employees self-assess first, then meet with their manager to discuss ratings.",
+      "relevant_sources": ["hr_policy.pdf"],
+      "relevant_chunks_keywords": ["performance review", "appraisal", "mid-year", "year-end", "rating"],
+      "category": "HR Policy"
+    },
+    {
+      "id": "q09",
+      "question": "What software is approved for use on company devices?",
+      "ground_truth": "Only software on the approved software list (ASL) maintained by IT may be installed. Requests for new software must go through the IT helpdesk portal.",
+      "relevant_sources": ["it_policy.pdf"],
+      "relevant_chunks_keywords": ["approved software", "software list", "company devices", "IT helpdesk"],
+      "category": "IT Policy"
+    },
+    {
+      "id": "q10",
+      "question": "What is the company's policy on conflicts of interest?",
+      "ground_truth": "Employees must disclose any personal financial interests in vendors, clients, or competitors to HR and their manager. Undisclosed conflicts are grounds for termination.",
+      "relevant_sources": ["code_of_conduct.pdf"],
+      "relevant_chunks_keywords": ["conflict of interest", "disclosure", "financial interest", "termination"],
+      "category": "Compliance"
+    },
+    {
+      "id": "q11",
+      "question": "How are overtime hours calculated and compensated?",
+      "ground_truth": "Overtime is defined as hours worked beyond 40 per week. Hourly employees receive 1.5x their regular rate. Salaried exempt employees are not eligible for overtime pay.",
+      "relevant_sources": ["hr_policy.pdf"],
+      "relevant_chunks_keywords": ["overtime", "1.5x", "40 hours", "compensation", "exempt"],
+      "category": "HR Policy"
+    },
+    {
+      "id": "q12",
+      "question": "What is the data retention policy for customer emails?",
+      "ground_truth": "Customer emails must be retained for 7 years per regulatory requirements. After 7 years, they are automatically purged from the archive system.",
+      "relevant_sources": ["data_governance.pdf"],
+      "relevant_chunks_keywords": ["data retention", "email", "7 years", "purge", "archive"],
+      "category": "Data Governance"
+    },
+    {
+      "id": "q13",
+      "question": "What are the eligibility criteria for the employee stock option plan?",
+      "ground_truth": "Full-time employees who have completed 1 year of service are eligible to participate in the ESOP. Part-time and contract workers are not eligible.",
+      "relevant_sources": ["benefits_guide.pdf"],
+      "relevant_chunks_keywords": ["stock option", "ESOP", "eligibility", "full-time", "1 year"],
+      "category": "Benefits"
+    },
+    {
+      "id": "q14",
+      "question": "What are the procedures for handling customer complaints?",
+      "ground_truth": "All complaints must be logged in the CRM within 24 hours. First response to the customer is required within 48 hours. Escalation to management occurs if not resolved within 5 business days.",
+      "relevant_sources": ["customer_service_manual.pdf"],
+      "relevant_chunks_keywords": ["complaint", "CRM", "48 hours", "escalation", "5 business days"],
+      "category": "Customer Service"
+    },
+    {
+      "id": "q15",
+      "question": "What is the maternity and paternity leave entitlement?",
+      "ground_truth": "Primary caregivers receive 16 weeks of paid parental leave. Secondary caregivers receive 4 weeks. Adoption is treated the same as birth for leave purposes.",
+      "relevant_sources": ["hr_policy.pdf"],
+      "relevant_chunks_keywords": ["maternity", "paternity", "parental leave", "16 weeks", "paid leave"],
+      "category": "HR Policy"
+    }
+  ]
+}

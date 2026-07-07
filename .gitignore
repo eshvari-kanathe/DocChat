@@ -1,0 +1,20 @@
+# Virtual Environment
+virenv/
+venv/
+.env/
+
+# Python
+__pycache__/
+*.pyc
+
+# Chroma DB
+chroma_db/
+
+# Streamlit
+.streamlit/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
