@@ -117,7 +117,7 @@ def _parse_citations(
             citations.append({"source": source_name, "page_number": page_num})
 
     # Fallback: if no citations found but context chunks exist, use the top chunk
-    if not citations and context_chunks:
+    if not citations and context_chunks and "I couldn't find information" not in answer_text:
         top_meta = context_chunks[0].get("metadata", {})
         fallback_source = top_meta.get("source", "Unknown")
         fallback_page = top_meta.get("page_number")
@@ -260,6 +260,19 @@ def generate_answer(
     usage = response.usage
     citations = _parse_citations(raw_answer, context_chunks)
 
+    # Clean the answer text so it doesn't double-print the sources list in the UI
+    clean_answer = raw_answer
+    if "### Sources" in clean_answer:
+        clean_answer = clean_answer.split("### Sources")[0]
+
+    # Standardize fallback response and clear citations
+    if "currently available documents" in clean_answer.lower() or "upload the relevant" in clean_answer.lower() or "couldn't find information" in clean_answer.lower():
+        clean_answer = (
+            "I couldn't find information related to your question in the currently available documents.\n\n"
+            "Please upload the relevant PDF, TXT, or DOCX file(s), and I'll be happy to search through them and provide an answer based on the uploaded content."
+        )
+        citations = []
+
     logger.info(
         f"[{chosen_provider}/{response.model}] "
         f"{usage.prompt_tokens if usage else '?'} in / "
@@ -268,7 +281,7 @@ def generate_answer(
     )
 
     return {
-        "answer": raw_answer.strip(),
+        "answer": clean_answer.strip(),
         "citations": citations,
         "model": f"{chosen_provider}/{response.model}",
         "input_tokens": usage.prompt_tokens if usage else 0,

@@ -111,16 +111,26 @@ def llm_judge(
     """
     try:
         from openai import OpenAI
+        from rag.generator import resolve_provider
     except ImportError:
         return {"score": 0, "reason": "openai not installed"}
 
-    key = api_key or config.OPENAI_API_KEY
-    if not key:
-        return {"score": 0, "reason": "no API key"}
+    chosen_provider, default_model, resolved_key, base_url = resolve_provider()
+    
+    # If the user didn't explicitly pass a model/key to the judge, use the active provider's defaults
+    active_model = default_model if model == "gpt-4o-mini" else model
+    active_key = api_key or resolved_key
 
-    client_kwargs = {"api_key": key}
-    if config.OPENAI_BASE_URL:
-        client_kwargs["base_url"] = config.OPENAI_BASE_URL
+    if chosen_provider == "ollama":
+        active_key = active_key or "ollama"
+
+    if not active_key:
+        return {"score": 0, "reason": f"no API key for {chosen_provider}"}
+
+    client_kwargs = {"api_key": active_key}
+    if base_url:
+        client_kwargs["base_url"] = base_url
+        
     client = OpenAI(**client_kwargs)
     prompt = (
         f"Question: {question}\n\n"
@@ -131,7 +141,7 @@ def llm_judge(
 
     try:
         resp = client.chat.completions.create(
-            model=model,
+            model=active_model,
             messages=[
                 {"role": "system", "content": _JUDGE_SYSTEM},
                 {"role": "user", "content": prompt},
@@ -211,22 +221,40 @@ def run_evaluation(
         judge_reason = ""
         gen_time = 0.0
 
-        if config.OPENAI_API_KEY:
-            try:
-                from rag.generator import generate_answer
-                messages = build_rag_prompt(question, retrieved)
-                t1 = time.perf_counter()
-                gen_resp = generate_answer(messages, retrieved)
-                gen_time = time.perf_counter() - t1
-                generated_answer = gen_resp["answer"]
+        has_api_key = any([
+            getattr(config, "OPENAI_API_KEY", ""),
+            getattr(config, "GROQ_API_KEY", ""),
+            getattr(config, "GEMINI_API_KEY", ""),
+        ])
+        
+        if has_api_key or getattr(config, "LLM_PROVIDER", "") == "ollama":
+            max_retries = 3
+            for attempt in range(max_retries):
+                try:
+                    from rag.generator import generate_answer
+                    messages = build_rag_prompt(question, retrieved)
+                    t1 = time.perf_counter()
+                    gen_resp = generate_answer(messages, retrieved)
+                    gen_time = time.perf_counter() - t1
+                    generated_answer = gen_resp["answer"]
 
-                if use_llm_judge:
-                    judge = llm_judge(question, generated_answer, ground_truth)
-                    judge_score = judge["score"]
-                    judge_reason = judge["reason"]
-            except Exception as exc:
-                logger.warning(f"Generation failed for {qid}: {exc}")
-                generated_answer = f"[ERROR: {exc}]"
+                    if use_llm_judge:
+                        judge = llm_judge(question, generated_answer, ground_truth)
+                        judge_score = judge.get("score")
+                        judge_reason = judge.get("reason", "")
+                    
+                    break  # Success, exit the retry loop
+                except Exception as exc:
+                    err_msg = str(exc).lower()
+                    if "rate limit" in err_msg or "429" in err_msg:
+                        if attempt < max_retries - 1:
+                            logger.warning(f"Rate limit hit for {qid}. Sleeping 20s and retrying... ({attempt+1}/{max_retries})")
+                            time.sleep(20)
+                            continue
+                    
+                    logger.warning(f"Generation failed for {qid}: {exc}")
+                    generated_answer = f"[ERROR: {exc}]"
+                    break
 
         result: EvalResult = {
             "id": qid,
@@ -250,6 +278,9 @@ def run_evaluation(
             f"top_score={top_score:.3f} | judge={judge_score} | "
             f"{question[:60]}"
         )
+
+        # Rate limit protection for free tiers (like Groq)
+        time.sleep(4)
 
     # Write CSV
     if output_csv:

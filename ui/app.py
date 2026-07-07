@@ -251,45 +251,18 @@ with st.sidebar:
     os.environ["LLM_PROVIDER"] = selected_provider
     config.LLM_PROVIDER = selected_provider
 
-    # ── API Key Input based on provider ──
+    # ── Validate API Key silently (Hidden from UI) ──
     cfg = PROVIDER_CONFIGS[selected_provider]
     key_env = cfg["key_env"]
 
     if key_env:
-        render_sidebar_section(f"🔑 {cfg['label']} API Key")
         default_val = getattr(config, key_env, "") or os.getenv(key_env, "")
-        
-        # Link for getting a key
-        info_links = {
-            "groq": "[Get a free Groq API key here](https://console.groq.com)",
-            "gemini": "[Get a free Gemini API key here](https://aistudio.google.com/app/apikey)",
-            "openai": "[Get an OpenAI API key here](https://platform.openai.com)",
-        }
-        if selected_provider in info_links:
-            st.markdown(info_links[selected_provider], unsafe_allow_html=True)
-
-        api_key_input = st.text_input(
-            "API Key",
-            type="password",
-            value=default_val or "",
-            placeholder="Enter API key...",
-            help=f"Your {cfg['label']} API key.",
-            label_visibility="collapsed",
-        )
-
-        if api_key_input:
-            os.environ[key_env] = api_key_input
-            setattr(config, key_env, api_key_input)
-            st.session_state.api_key_valid = _check_api_key(selected_provider, api_key_input)
-            if st.session_state.api_key_valid:
-                st.success("✅ Key accepted", icon="🔑")
-            else:
-                st.warning("⚠️ Key format looks invalid")
-        else:
-            st.session_state.api_key_valid = _check_api_key(selected_provider, default_val)
+        if default_val:
+            os.environ[key_env] = default_val
+            setattr(config, key_env, default_val)
+        st.session_state.api_key_valid = _check_api_key(selected_provider, default_val)
     else:
         # Ollama requires no key
-        st.markdown("*No API Key required for local Ollama.*")
         st.session_state.api_key_valid = True
 
     # ── Upload ──
@@ -302,49 +275,12 @@ with st.sidebar:
         help="Supported: PDF, DOCX, TXT",
     )
 
-    # ── Chunking Settings ──
-    render_sidebar_section("⚙️ Chunking Settings")
-    strategy = st.selectbox(
-        "Strategy",
-        options=["fixed", "semantic"],
-        format_func=lambda x: "Fixed-size with overlap" if x == "fixed" else "Semantic (paragraph)",
-        help="Fixed: predictable size. Semantic: preserves paragraph context.",
-    )
-    chunk_size = st.slider(
-        "Chunk Size (tokens)",
-        min_value=128,
-        max_value=1024,
-        value=config.CHUNK_SIZE,
-        step=64,
-        help="Approximate tokens per chunk (1 token ≈ 4 chars)",
-    )
-    overlap = st.slider(
-        "Overlap (tokens)",
-        min_value=0,
-        max_value=256,
-        value=config.CHUNK_OVERLAP,
-        step=16,
-        help="Token overlap between adjacent chunks",
-    )
-
-    # ── Retrieval Settings ──
-    render_sidebar_section("🔎 Retrieval Settings")
-    top_k = st.slider(
-        "Top-K Chunks",
-        min_value=1,
-        max_value=15,
-        value=config.TOP_K,
-        step=1,
-        help="Number of chunks to retrieve per query",
-    )
-    score_threshold = st.slider(
-        "Min Similarity Score",
-        min_value=0.0,
-        max_value=1.0,
-        value=0.10,
-        step=0.05,
-        help="Discard chunks below this cosine similarity score",
-    )
+    # ── Default Settings (Hidden from UI) ──
+    strategy = "fixed"
+    chunk_size = config.CHUNK_SIZE
+    overlap = config.CHUNK_OVERLAP
+    top_k = config.TOP_K
+    score_threshold = 0.10
 
     # ── Index Button ──
     st.markdown("<br>", unsafe_allow_html=True)
@@ -447,13 +383,9 @@ if index_clicked and uploaded_files:
 
 render_hero()
 
-# Status bar
+# Status bar (removed from UI)
 store = ensure_store()
-render_status_bar(
-    doc_count=len(store.list_sources()),
-    chunk_count=store.count,
-    api_ok=st.session_state.api_key_valid,
-)
+
 
 # Render conversation history
 if st.session_state.messages:
@@ -618,23 +550,4 @@ if query:
         )
 
 
-# ─── Footer ───────────────────────────────────────────────────────────────────
 
-st.markdown(
-    f"""
-    <div style="
-      text-align: center;
-      padding: 2rem 0 0;
-      color: #4a5a7a;
-      font-size: 0.75rem;
-      border-top: 1px solid #1e2c4a;
-      margin-top: 3rem;
-    ">
-      DocChat · RAG-Based Document Q&amp;A ·
-      <span style="color: #7c6aff;">all-MiniLM-L6-v2</span> embeddings ·
-      <span style="color: #00d4ff;">ChromaDB</span> vector store ·
-      <span style="color: #00e5b0;">{PROVIDER_CONFIGS.get(selected_provider, {}).get("label", "LLM")}</span>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)

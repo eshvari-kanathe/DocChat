@@ -550,18 +550,6 @@ def render_assistant_message(
         )
 
     metric_html = ""
-    if meta:
-        chips = ""
-        if meta.get("n_chunks") is not None:
-            chips += f'<span class="metric-chip chunks">⬡ {meta["n_chunks"]} chunks</span>'
-        if meta.get("model"):
-            model_short = str(meta["model"]).replace("gpt-", "GPT-")
-            chips += f'<span class="metric-chip model">⚡ {model_short}</span>'
-        if meta.get("input_tokens"):
-            total_tok = (meta.get("input_tokens", 0) or 0) + (meta.get("output_tokens", 0) or 0)
-            chips += f'<span class="metric-chip tokens">🔢 {total_tok} tokens</span>'
-        if chips:
-            metric_html = f'<div class="metrics-row">{chips}</div>'
 
     st.html(
         f"""

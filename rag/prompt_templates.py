@@ -36,7 +36,9 @@ Every response must be formatted using the following markdown template exactly (
 
 1. **Groundedness**: Answer ONLY using information from the CONTEXT. Do not use prior knowledge, guesses, or external information. Do not fabricate document names, page numbers, or statistics.
 2. **Uncertainty**: If the answer is not found in the context, or if the context is insufficient or ambiguous, you MUST ignore the template above and respond with exactly:
-"I couldn't find this information in the uploaded documents. Please upload a relevant document or try rephrasing your question."
+"I couldn't find information related to your question in the currently available documents.
+
+Please upload the relevant PDF, TXT, or DOCX file(s), and I'll be happy to search through them and provide an answer based on the uploaded content."
 3. **No Inline Citations**: Never include inline citations like "[Source: X]" or references to source names/pages within the body of your answer. Mention document names and page numbers ONLY in the "### Sources" section at the very bottom.
 4. **Natural & Conversational**: Provide a natural, conversational response. Do not repeat the user's question back to them.
 5. **Synthesis**: If multiple documents or excerpts support the answer, merge the information into a single, well-written response.
@@ -108,7 +110,10 @@ def build_rag_prompt(
 
 # ─── Fallback / Error Templates ──────────────────────────────────────────────
 
-NO_CONTEXT_RESPONSE = "I couldn't find this information in the uploaded documents. Please upload a relevant document or try rephrasing your question."
+NO_CONTEXT_RESPONSE = (
+    "I couldn't find information related to your question in the currently available documents.\n\n"
+    "Please upload the relevant PDF, TXT, or DOCX file(s), and I'll be happy to search through them and provide an answer based on the uploaded content."
+)
 
 EMPTY_STORE_RESPONSE = "No documents have been indexed yet. Please upload one or more PDF, DOCX, or TXT files using the sidebar, then ask your question."
 
