@@ -111,8 +111,8 @@ Open `http://localhost:8501` in your browser.
 
 ### Indexing Documents
 
-1. Select your **LLM Provider** in the sidebar.
-2. Drag and drop or select PDF / DOCX / TXT files under **📤 Upload Documents**.
+1. Drag and drop or select PDF / DOCX / TXT files under **📤 Upload Documents**.
+2. Select your preferred **Chunking Strategy** (Fixed or Paragraph).
 3. Click **🚀 Index Documents**.
    * Note: The backend automatically skips duplicate files using SHA-256 signatures, chunks files using optimal defaults (512 token size with 64 overlap), and saves them to local ChromaDB.
 

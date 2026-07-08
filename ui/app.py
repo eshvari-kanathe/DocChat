@@ -231,21 +231,12 @@ with st.sidebar:
         """
     )
 
-    # ── LLM Provider Selection ──
-    render_sidebar_section("🤖 LLM Provider")
+    # ── LLM Provider Configuration (Hidden from UI) ──
     from rag.generator import PROVIDER_CONFIGS, resolve_provider
 
-    # Get configured default or use auto-detected
+    # Auto-detect provider from environment and set it silently
     detected_provider, _, _, _ = resolve_provider()
-    provider_options = list(PROVIDER_CONFIGS.keys())
-    
-    selected_provider = st.selectbox(
-        "Select Provider",
-        options=provider_options,
-        index=provider_options.index(detected_provider) if detected_provider in provider_options else 0,
-        format_func=lambda x: PROVIDER_CONFIGS[x]["label"],
-        label_visibility="collapsed",
-    )
+    selected_provider = detected_provider
     
     # Save selection to session state and config/env
     os.environ["LLM_PROVIDER"] = selected_provider
@@ -275,8 +266,16 @@ with st.sidebar:
         help="Supported: PDF, DOCX, TXT",
     )
 
+    # ── Chunking Strategy ──
+    render_sidebar_section("✂️ Chunking Strategy")
+    strategy = st.selectbox(
+        "Strategy",
+        options=["fixed", "semantic"],
+        format_func=lambda x: "Fixed (Default)" if x == "fixed" else "Paragraph (Semantic)",
+        label_visibility="collapsed"
+    )
+
     # ── Default Settings (Hidden from UI) ──
-    strategy = "fixed"
     chunk_size = config.CHUNK_SIZE
     overlap = config.CHUNK_OVERLAP
     top_k = config.TOP_K
@@ -285,7 +284,7 @@ with st.sidebar:
     # ── Index Button ──
     st.markdown("<br>", unsafe_allow_html=True)
     index_clicked = st.button(
-        "🚀 Index Documents",
+        " Index Documents",
         type="primary",
         use_container_width=True,
         disabled=not uploaded_files,
