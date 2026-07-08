@@ -166,7 +166,7 @@ def index_file(
             doc["source_path"] = filename
 
         # 3. Chunk
-        status_text.markdown(f"✂️ Chunking `{filename}` [{strategy}]...")
+        status_text.markdown(f"Chunking `{filename}` [{strategy}]...")
         progress_bar.progress(45)
         chunks = chunk_documents(
             accepted,
@@ -188,7 +188,7 @@ def index_file(
         )
 
         # 5. Store
-        status_text.markdown(f"💾 Storing in vector database...")
+        status_text.markdown(f" Storing in vector database...")
         progress_bar.progress(88)
         store.upsert_chunks(chunks, embeddings.tolist())
         progress_bar.progress(100)
@@ -257,7 +257,7 @@ with st.sidebar:
         st.session_state.api_key_valid = True
 
     # ── Upload ──
-    render_sidebar_section("📤 Upload Documents")
+    render_sidebar_section(" Upload Documents")
     uploaded_files = st.file_uploader(
         "Upload files",
         type=["pdf", "docx", "doc", "txt"],
@@ -267,7 +267,7 @@ with st.sidebar:
     )
 
     # ── Chunking Strategy ──
-    render_sidebar_section("✂️ Chunking Strategy")
+    render_sidebar_section(" Chunking Strategy")
     strategy = st.selectbox(
         "Strategy",
         options=["fixed", "semantic"],
@@ -301,7 +301,7 @@ with st.sidebar:
     store = ensure_store()
     sources = store.list_sources()
     if sources:
-        render_sidebar_section(f"📚 Indexed ({len(sources)} files)")
+        render_sidebar_section(f" Indexed ({len(sources)} files)")
         for src in sources:
             ext = Path(src).suffix.lstrip(".").lower()
             render_source_badge(src, ext)
@@ -331,7 +331,7 @@ if index_clicked and uploaded_files:
 
     index_container = st.empty()
     with index_container.container():
-        st.markdown("### 📥 Indexing Documents")
+        st.markdown("###  Indexing Documents")
         progress_bar = st.progress(0)
         status_text = st.empty()
 
