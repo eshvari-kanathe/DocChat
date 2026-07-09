@@ -1,20 +1,3 @@
-"""
-DocChat — Streamlit Application
-================================
-Main entrypoint for the RAG-based Document Q&A system.
-
-Run with:
-    streamlit run ui/app.py
-
-Features:
-  • Multi-file upload (PDF, DOCX, TXT)
-  • Configurable chunking strategy, size, and overlap via sidebar
-  • ChromaDB vector store with real-time indexing progress
-  • Grounded answer generation with OpenAI GPT-4o-mini
-  • Citation cards linking answers to source documents + page numbers
-  • Conversation memory for multi-turn Q&A
-  • Dark, premium UI with animations
-"""
 from __future__ import annotations
 
 import logging

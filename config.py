@@ -26,14 +26,6 @@ LLM_PROVIDER: str = os.getenv("LLM_PROVIDER", "")
 GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
 
-# ─── OpenAI ───────────────────────────────────────────────────────────────────
-OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
-
-# ─── Google Gemini (FREE tier) ────────────────────────────────────────────────
-# Get a free key at: https://aistudio.google.com/app/apikey
-GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
-GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
 
 # ─── Ollama (Local, no key needed) ───────────────────────────────────────────
 OLLAMA_BASE_URL: str = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434/v1")

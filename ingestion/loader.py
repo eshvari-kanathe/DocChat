@@ -1,14 +1,3 @@
-"""
-Document loader: extracts clean text from PDF, DOCX, and TXT files.
-
-Each loaded document is a dict with the following fields:
-    text        - extracted plain text
-    source      - filename (basename)
-    source_path - absolute path to the file
-    page_number - 1-indexed page number (DOCX/TXT always = 1)
-    total_pages - total page count
-    file_type   - "pdf" | "docx" | "txt"
-"""
 from __future__ import annotations
 
 import logging
@@ -23,12 +12,8 @@ Document = dict[str, Any]
 # ─── Individual loaders ───────────────────────────────────────────────────────
 
 def load_pdf(file_path: Path) -> list[Document]:
-    """
-    Extract text page-by-page from a PDF using PyMuPDF.
-    Page numbers are 1-indexed for human-readable citations.
-    """
     try:
-        import fitz  # PyMuPDF
+        import fitz  
     except ImportError:
         raise ImportError("PyMuPDF is required: pip install PyMuPDF")
 
