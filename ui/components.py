@@ -68,9 +68,19 @@ html, body, [class*="css"] {
 }
 
 /* ── Main Content ────────────────────────────────────────── */
+[data-testid="stHeader"] {
+  display: none !important;
+}
+footer {
+  display: none !important;
+}
+div[data-testid="InputInstructions"] {
+  display: none !important;
+}
+
 .main .block-container {
   max-width: 900px;
-  padding: 2rem 2rem 4rem !important;
+  padding: 0rem 2rem 0rem !important;
 }
 
 /* ── Hero Header ─────────────────────────────────────────── */
@@ -290,7 +300,7 @@ html, body, [class*="css"] {
 }
 
 /* ── Streamlit Overrides ─────────────────────────────────── */
-.stButton > button {
+.stButton > button[kind="primary"] {
   background: linear-gradient(135deg, #7c6aff, #a855f7) !important;
   color: white !important;
   border: none !important;
@@ -299,7 +309,7 @@ html, body, [class*="css"] {
   font-family: 'Inter', sans-serif !important;
   transition: all 0.2s ease !important;
 }
-.stButton > button:hover {
+.stButton > button[kind="primary"]:hover {
   opacity: 0.9 !important;
   transform: translateY(-1px) !important;
   box-shadow: 0 4px 15px rgba(124,106,255,0.4) !important;
@@ -308,6 +318,17 @@ html, body, [class*="css"] {
   background: var(--bg-card) !important;
   border: 1px solid var(--border-accent) !important;
   color: var(--text-secondary) !important;
+}
+.stButton > button[kind="tertiary"] {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: var(--text-secondary) !important;
+  padding: 0 !important;
+}
+.stButton > button[kind="tertiary"]:hover {
+  background: var(--bg-card-hover) !important;
+  color: var(--text-primary) !important;
 }
 .stSelectbox > div > div {
   background: var(--bg-card) !important;
@@ -390,6 +411,65 @@ hr {
   margin: 1.2rem 0 0.5rem;
   padding-bottom: 0.3rem;
   border-bottom: 1px solid var(--border);
+}
+
+/* ── Auth Screen ─────────────────────────────────────────── */
+.auth-header {
+  max-width: 450px;
+  margin: 0 auto 0.5rem;
+}
+.auth-logo {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 0.2rem;
+}
+.auth-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  text-align: center;
+  background: var(--gradient-hero);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 0.2rem;
+}
+.auth-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+/* ── Chat List Items ─────────────────────────────────────────*/
+.chat-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  border: 1px solid transparent;
+}
+.chat-list-item:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--border-accent);
+}
+.chat-list-item.active {
+  background: linear-gradient(135deg, #7c6aff22, #00d4ff18);
+  border-color: var(--accent-purple);
+}
+.chat-list-title {
+  font-size: 0.82rem;
+  color: var(--text-primary);
+  flex: 1;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.chat-list-date {
+  font-size: 0.68rem;
+  color: var(--text-muted);
 }
 </style>
 """

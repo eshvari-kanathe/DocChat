@@ -289,3 +289,84 @@ def generate_answer(
         "raw": raw_answer,
         "provider": chosen_provider,
     }
+
+
+def condense_query(
+    query: str,
+    conversation_history: list[dict],
+    provider: str | None = None,
+    api_key: str | None = None,
+) -> str:
+    """
+    Given a follow-up question and previous turns, rewrite the question to be a standalone search query.
+    If the history is empty, returns the query as is.
+    """
+    if not conversation_history:
+        return query
+
+    try:
+        from openai import OpenAI
+    except ImportError:
+        return query
+
+    # Resolve provider settings
+    chosen_provider, default_model, resolved_key, base_url = resolve_provider(provider)
+    _api_key = api_key or resolved_key
+    _model = default_model
+
+    if chosen_provider == "ollama":
+        _api_key = _api_key or "ollama"
+
+    if not _api_key and chosen_provider != "ollama":
+        return query
+
+    client_kwargs: dict[str, Any] = {"api_key": _api_key}
+    if base_url:
+        client_kwargs["base_url"] = base_url
+
+    client = OpenAI(**client_kwargs)
+
+    # Format conversation history (last 4 turns) for the condensation prompt
+    history_str = ""
+    for msg in conversation_history[-8:]:
+        role = "User" if msg["role"] == "user" else "Assistant"
+        content = msg["content"]
+        # Strip system templates if present
+        if "### Answer" in content:
+            parts = content.split("### Answer")
+            if len(parts) > 1:
+                content = parts[1].split("### Sources")[0].strip()
+        history_str += f"{role}: {content}\n"
+
+    system_prompt = (
+        "You are an AI assistant. Given the following conversation history between a User and an Assistant, "
+        "and a follow-up question from the User, rewrite the follow-up question to be a standalone search query "
+        "that contains all the necessary context. Do not answer the question; just return the rewritten question. "
+        "If the question is already standalone, return it exactly as is."
+    )
+
+    prompt = (
+        f"Conversation History:\n{history_str}\n"
+        f"Follow-up Question: {query}\n\n"
+        f"Standalone search query:"
+    )
+
+    try:
+        response = client.chat.completions.create(
+            model=_model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.0,
+            max_tokens=100,
+        )
+        rewritten = response.choices[0].message.content.strip()
+        # Remove surrounding quotes if model adds them
+        if (rewritten.startswith('"') and rewritten.endswith('"')) or (rewritten.startswith("'") and rewritten.endswith("'")):
+            rewritten = rewritten[1:-1].strip()
+        logger.info(f"Rewrote query: '{query}' -> '{rewritten}'")
+        return rewritten
+    except Exception as e:
+        logger.warning(f"Error condensing query: {e}")
+        return query
